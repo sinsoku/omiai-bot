@@ -6,6 +6,10 @@ from omiaibot import OmiaiBot
 from StringIO import StringIO
 
 
+def ng_(expr, msg=None):
+    return ok_(not expr, msg)
+
+
 class TestOmiaiBot(object):
 
     def test_parse_config(self):
