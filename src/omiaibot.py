@@ -19,3 +19,21 @@ class OmiaiBot(object):
         self.consumer_secret = configs[1].strip()
         self.access_key = configs[2].strip()
         self.access_secret = configs[3].strip()
+
+    def get_man_tweets(self, tweets):
+        man_words = [u'彼女']
+        return self._get_tweet_include_word(tweets, man_words)
+
+    def get_woman_tweets(self, tweets):
+        woman_words = [u'彼氏']
+        return self._get_tweet_include_word(tweets, woman_words)
+
+    def _get_tweet_include_word(self, tweets, words):
+        result = list()
+        for tweet in tweets:
+            for word in words:
+                if tweet.find(word) != -1:
+                    result.append(tweet)
+                    break
+
+        return result
