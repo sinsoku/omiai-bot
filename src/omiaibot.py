@@ -11,3 +11,11 @@ class OmiaiBot(object):
 
     def __init__(self):
         pass
+
+    def parse_config(self, config_file):
+        configs = config_file.readlines()
+
+        self.consumer_key = configs[0].strip()
+        self.consumer_secret = configs[1].strip()
+        self.access_key = configs[2].strip()
+        self.access_secret = configs[3].strip()
