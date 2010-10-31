@@ -23,11 +23,14 @@ class MainHandler(webapp.RequestHandler):
         self.response.out.write('Hello world!')
 
 
-def main():
-    application = webapp.WSGIApplication([('/', MainHandler)],
-                                         debug=True)
-    util.run_wsgi_app(application)
+def application():
+    handlers = [('/', MainHandler)]
 
+    return webapp.WSGIApplication(handlers, debug=True)
+
+
+def main():
+    util.run_wsgi_app(application())
 
 if __name__ == '__main__':
     main()
