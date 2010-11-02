@@ -24,22 +24,22 @@ class MainHandler(webapp.RequestHandler):
         self.response.out.write('MainHandler')
 
 
-class SaveHandler(webapp.RequestHandler):
-    def get(self):
+class TaskHandler(webapp.RequestHandler):
+    def get(self, kind):
         bot = OmiaiBot()
         config_file = open('oauth.txt', 'r')
         bot.parse_config(config_file)
 
-        bot.save()
-
-
-class UpdateHandler(webapp.RequestHandler):
-    def get(self):
-        bot = OmiaiBot()
-        config_file = open('oauth.txt', 'r')
-        bot.parse_config(config_file)
-
-        bot.update()
+        if kind == 'save_timeline':
+            bot.save_timeline()
+        elif kind == 'save_search':
+            bot.save_search()
+        elif kind == 'reply_mentions':
+            bot.reply_mentions()
+        elif kind == 'forward_direct_messages':
+            bot.forward_direct_message()
+        elif kind == 'update':
+            bot.update()
 
 
 class ReadmeHandler(webapp.RequestHandler):
@@ -54,8 +54,7 @@ class UserHandler(webapp.RequestHandler):
 
 def application():
     handlers = [('/', MainHandler),
-                ('/save', SaveHandler),
-                ('/update', UpdateHandler),
+                ('/task/(.*)', TaskHandler),
                 ('/readme', ReadmeHandler),
                 ('/user/(.*)', UserHandler)]
 
