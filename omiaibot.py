@@ -20,6 +20,12 @@ class OmiaiBot(object):
         self.access_key = configs[2].strip()
         self.access_secret = configs[3].strip()
 
+    def save(self):
+        pass
+
+    def update(self):
+        pass
+
     def get_man_tweets(self, tweets):
         man_words = [u'彼女']
         return self._get_tweet_include_word(tweets, man_words)

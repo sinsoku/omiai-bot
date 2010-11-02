@@ -16,15 +16,48 @@
 #
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
+from omiaibot import OmiaiBot
 
 
 class MainHandler(webapp.RequestHandler):
     def get(self):
-        self.response.out.write('Hello world!')
+        self.response.out.write('MainHandler')
+
+
+class SaveHandler(webapp.RequestHandler):
+    def get(self):
+        bot = OmiaiBot()
+        config_file = open('oauth.txt', 'r')
+        bot.parse_config(config_file)
+
+        bot.save()
+
+
+class UpdateHandler(webapp.RequestHandler):
+    def get(self):
+        bot = OmiaiBot()
+        config_file = open('oauth.txt', 'r')
+        bot.parse_config(config_file)
+
+        bot.update()
+
+
+class ReadmeHandler(webapp.RequestHandler):
+    def get(self):
+        self.response.out.write('ReadmeHandler')
+
+
+class UserHandler(webapp.RequestHandler):
+    def get(self, user):
+        self.response.out.write('UserHandler/' + user)
 
 
 def application():
-    handlers = [('/', MainHandler)]
+    handlers = [('/', MainHandler),
+                ('/save', SaveHandler),
+                ('/update', UpdateHandler),
+                ('/readme', ReadmeHandler),
+                ('/user/(.*)', UserHandler)]
 
     return webapp.WSGIApplication(handlers, debug=True)
 

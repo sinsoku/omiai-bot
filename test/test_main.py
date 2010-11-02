@@ -13,4 +13,3 @@ class TestMain(object):
         response = app.get('/')
 
         eq_('200 OK', response.status)
-        ok_('Hello world!' in str(response))
