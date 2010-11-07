@@ -66,9 +66,14 @@ class OmiaiBot(object):
 
     def save_search(self):
         search_result = self.api.search(' OR '.join(self.words))
-        search_tweets = [self.api.get_status(tweet.id)
-                            for tweet in search_result]
-        tweets = [tweet for tweet in search_tweets
+        for tweet in search_result:
+            # ユーザオブジェクトの代用に無理やりlambdaを使用
+            author = lambda x: x
+            author.id = tweet.from_user_id
+            author.screen_name = tweet.from_user
+            tweet.author = author
+
+        tweets = [tweet for tweet in search_result
                   if tweet.author.screen_name != 'omiai_bot']
         tweets = self.remove_all(tweets, self.exclude)
         self._put_tweets(tweets)
