@@ -111,14 +111,12 @@ class OmiaiBot(object):
     def update_followers(self):
         followers = self.api.followers()
 
-        for entity in FollowersModel.all():
-            entity.delete()
-
         for user in followers:
-            db = FollowersModel()
-            db.id = user.id
-            db.screen_name = user.screen_name
-            db.put()
+            if FollowersModel.all().filter('id', user.id).count() == 0:
+                db = FollowersModel()
+                db.id = user.id
+                db.screen_name = user.screen_name
+                db.put()
 
     def update(self):
         tweets = StatusModel.all().filter('updated', False).fetch(3)
