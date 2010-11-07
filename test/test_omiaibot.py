@@ -8,15 +8,16 @@ from StringIO import StringIO
 
 class MockUser(object):
 
-    def __init__(self, screen_name):
+    def __init__(self, id, screen_name):
+        self.id = id
         self.screen_name = screen_name
 
 
 class MockStatus(object):
 
-    def __init__(self, id, screen_name, text):
+    def __init__(self, id, user_id, screen_name, text):
         self.id = id
-        self.author = MockUser(screen_name)
+        self.author = MockUser(user_id, screen_name)
         self.text = text
 
 
@@ -39,9 +40,9 @@ class TestOmiaiBot(object):
 
     def test_find_all(self):
         bot = OmiaiBot(init_api=False)
-        tweets = [MockStatus(31, u'find_all_user', u'hoge text'),
-                  MockStatus(32, u'find_all_user', u'foo text'),
-                  MockStatus(33, u'find_all_user', u'test bar text')]
+        tweets = [MockStatus(31, 30, u'find_all_user', u'hoge text'),
+                  MockStatus(32, 30, u'find_all_user', u'foo text'),
+                  MockStatus(33, 30, u'find_all_user', u'test bar text')]
         words = [u'foo', u'bar']
 
         tweets = bot.find_all(tweets, words)
@@ -52,9 +53,9 @@ class TestOmiaiBot(object):
 
     def test_remove_all(self):
         bot = OmiaiBot(init_api=False)
-        tweets = [MockStatus(31, u'find_all_user', u'hoge text'),
-                  MockStatus(32, u'find_all_user', u'foo text'),
-                  MockStatus(33, u'find_all_user', u'test bar text')]
+        tweets = [MockStatus(31, 30, u'find_all_user', u'hoge text'),
+                  MockStatus(32, 30, u'find_all_user', u'foo text'),
+                  MockStatus(33, 30, u'find_all_user', u'test bar text')]
         exclude = [u'test']
 
         tweets = bot.remove_all(tweets, exclude)
@@ -64,7 +65,7 @@ class TestOmiaiBot(object):
         eq_(tweets[1].text, u'foo text')
 
     def test_put_tweets_when_data_is_simple(self):
-        data = [MockStatus(1, u'user_name', u'text')]
+        data = [MockStatus(1, 1, u'user_name', u'text')]
 
         bot = OmiaiBot(init_api=False)
         bot._put_tweets(data)
@@ -78,8 +79,8 @@ class TestOmiaiBot(object):
         eq_(tweet.updated, False)
 
     def test_put_tweets_when_data_is_multiple(self):
-        data = [MockStatus(11, u'user1', u'text1'),
-                MockStatus(12, u'user2', u'text2')]
+        data = [MockStatus(11, 11, u'user1', u'text1'),
+                MockStatus(12, 12, u'user2', u'text2')]
 
         bot = OmiaiBot(init_api=False)
         bot._put_tweets(data)
@@ -98,8 +99,8 @@ class TestOmiaiBot(object):
         eq_(tweets[1].updated, False)
 
     def test_put_tweets_when_exist_same_user(self):
-        data = [MockStatus(21, u'same_user', u'text1'),
-                MockStatus(22, u'same_user', u'text2')]
+        data = [MockStatus(21, 20, u'same_user', u'text1'),
+                MockStatus(22, 20, u'same_user', u'text2')]
 
         bot = OmiaiBot(init_api=False)
         bot._put_tweets(data)
@@ -110,8 +111,8 @@ class TestOmiaiBot(object):
         eq_(len(users), 1)
 
     def test_put_tweets_when_exist_same_tweet(self):
-        data = [MockStatus(41, u'same_tweet', u'text1'),
-                MockStatus(41, u'same_tweet', u'text1')]
+        data = [MockStatus(41, 40, u'same_tweet', u'text1'),
+                MockStatus(41, 40, u'same_tweet', u'text1')]
 
         bot = OmiaiBot(init_api=False)
         bot._put_tweets(data)

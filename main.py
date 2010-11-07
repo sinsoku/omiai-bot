@@ -25,6 +25,7 @@ class MainHandler(webapp.RequestHandler):
 
 
 class TaskHandler(webapp.RequestHandler):
+
     def get(self, kind):
         bot = OmiaiBot()
 
@@ -35,9 +36,11 @@ class TaskHandler(webapp.RequestHandler):
         elif kind == 'reply_mentions':
             bot.reply_mentions()
         elif kind == 'forward_direct_messages':
-            bot.forward_direct_message()
+            bot.forward_direct_messages()
         elif kind == 'auto_refollow':
             bot.auto_refollow()
+        elif kind == 'update_followers':
+            bot.update_followers()
         elif kind == 'update':
             bot.update()
 

@@ -10,6 +10,7 @@ tweepy = zipimporter(tweepy_path).load_module('tweepy')
 
 
 class UserModel(db.Model):
+    id = db.IntegerProperty()
     screen_name = db.StringProperty()
 
 
@@ -20,9 +21,14 @@ class StatusModel(db.Model):
     updated = db.BooleanProperty()
 
 
-class OmiaiBotModel(db.Model):
-    followers = db.StringListProperty
-    direct_messages = db.ListProperty(long)
+class FollowersModel(db.Model):
+    id = db.IntegerProperty()
+    screen_name = db.StringProperty()
+
+
+class DirectMessagesModel(db.Model):
+    id = db.IntegerProperty()
+    text = db.TextProperty()
 
 
 class OmiaiBot(object):
@@ -32,14 +38,9 @@ class OmiaiBot(object):
     exclude = [u'http://']
 
     def __init__(self, init_api=True):
-        self.db = OmiaiBotModel.all().get()
-        if self.db == None:
-            self.db = OmiaiBotModel()
-            self.db.put()
-
         if init_api:
             config_file = open('oauth.txt', 'r')
-            auth_info = self.parse_config(config_file)
+            auth_info = self._parse_config(config_file)
 
             auth = tweepy.OAuthHandler(auth_info['consumer_key'],
                                        auth_info['consumer_secret'])
@@ -56,38 +57,68 @@ class OmiaiBot(object):
         return auth_info
 
     def save_timeline(self):
-        tweets = self.api.home_timeline()
+        friends_tl = self.api.friends_timeline()
+        tweets = [tweet for tweet in friends_tl
+                  if tweet.author.screen_name != 'omiai_bot']
         tweets = self.find_all(tweets, self.words)
         tweets = self.remove_all(tweets, self.exclude)
         self._put_tweets(tweets)
 
     def save_search(self):
-        tweets = self.api.search(' OR '.join(self.words))
+        search_result = self.api.search(' OR '.join(self.words))
+        search_tweets = [self.api.get_status(tweet.id)
+                            for tweet in search_result]
+        tweets = [tweet for tweet in search_tweets
+                  if tweet.author.screen_name != 'omiai_bot']
         tweets = self.remove_all(tweets, self.exclude)
         self._put_tweets(tweets)
 
     def reply_mentions(self):
-        tweets = self.api.mentions()
+        mentions = self.api.mentions()
+        tweets = [tweet for tweet in mentions
+                  if tweet.author.screen_name != 'omiai_bot']
         tweets = self.find_all(tweets, self.words)
         tweets = self.remove_all(tweets, self.exclude)
         self._put_tweets(tweets)
 
     def forward_direct_messages(self):
         messages = self.api.direct_messages()
+
         for message in messages:
-            if not message in self.db.direct_messages:
+            if DirectMessagesModel.all().filter('id', message.id).count() == 0:
                 status_data = {'forward_user': 'sinsoku_listy',
                                'user': message.sender_screen_name,
                                'text': message.text}
-                status = 'd %(forward_user)s %(user)s: %(text)s' % status_data
+                status = 'd %(forward_user)s @%(user)s: %(text)s' % status_data
                 if len(status) < 140:
                     self.api.update_status(status)
                 else:
                     self.api.update_status(status[0:137] + '...')
 
+                db = DirectMessagesModel()
+                db.id = message.id
+                db.text = message.text
+                db.put()
+
     def auto_refollow(self):
-        #ToDo: protected 以外
-        pass
+        friends_ids = self.api.friends_ids()
+        followers = self.api.followers()
+
+        for user in followers:
+            if not user.protected and not user.id in friends_ids:
+                self.api.create_friendship(user.screen_name)
+
+    def update_followers(self):
+        followers = self.api.followers()
+
+        for entity in FollowersModel.all():
+            entity.delete()
+
+        for user in followers:
+            db = FollowersModel()
+            db.id = user.id
+            db.screen_name = user.screen_name
+            db.put()
 
     def update(self):
         tweets = StatusModel.all().filter('updated', False).fetch(3)
@@ -126,10 +157,11 @@ class OmiaiBot(object):
     def _put_tweets(self, tweets):
         for tweet in tweets:
             query = UserModel.all()
-            query = query.filter('screen_name', tweet.author.screen_name)
+            query = query.filter('id', tweet.author.id)
             user = query.get()
             if user == None:
                 user = UserModel()
+                user.id = tweet.author.id
                 user.screen_name = tweet.author.screen_name
                 user.put()
 
