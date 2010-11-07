@@ -1,19 +1,19 @@
 cron:
-- description: save timeline every 5 minutes
+- description: save timeline every 7 minutes
   url: /task/save_timeline
-  schedule: every 5 minutes
+  schedule: every 7 minutes
   timezone: Asia/Tokyo
-- description: save search results every 10 minutes
+- description: save search results every 9 minutes
   url: /task/save_search
-  schedule: every 10 minutes
+  schedule: every 9 minutes
   timezone: Asia/Tokyo
-- description: reply mentions every 5 minutes
+- description: reply mentions every 11 minutes
   url: /task/reply_mentions
-  schedule: every 5 minutes
+  schedule: every 11 minutes
   timezone: Asia/Tokyo
-- description: forward direct messages every 15 minutes
+- description: forward direct messages every 13 minutes
   url: /task/forward_direct_messages
-  schedule: every 15 minutes
+  schedule: every 13 minutes
   timezone: Asia/Tokyo
 - description: refollowe every days
   url: /task/auto_refollow
@@ -23,7 +23,7 @@ cron:
   url: /task/update_followers
   schedule: every day of month 02:10
   timezone: Asia/Tokyo
-- description: omiyibot post status every 5 minutes
+- description: post status every 15 minutes
   url: /task/update
-  schedule: every 5 minutes
+  schedule: every 15 minutes
   timezone: Asia/Tokyo
