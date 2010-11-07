@@ -27,8 +27,6 @@ class MainHandler(webapp.RequestHandler):
 class TaskHandler(webapp.RequestHandler):
     def get(self, kind):
         bot = OmiaiBot()
-        config_file = open('oauth.txt', 'r')
-        bot.parse_config(config_file)
 
         if kind == 'save_timeline':
             bot.save_timeline()
@@ -38,6 +36,8 @@ class TaskHandler(webapp.RequestHandler):
             bot.reply_mentions()
         elif kind == 'forward_direct_messages':
             bot.forward_direct_message()
+        elif kind == 'auto_refollow':
+            bot.auto_refollow()
         elif kind == 'update':
             bot.update()
 
