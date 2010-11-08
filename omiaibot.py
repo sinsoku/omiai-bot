@@ -137,21 +137,14 @@ class OmiaiBot(object):
 
     def _put_tweets(self, tweets):
         for tweet in tweets:
-            query = UserModel.all()
-            query = query.filter('id', tweet.author.id)
-            user = query.get()
+            user = UserModel.all().filter('id', tweet.author.id).get()
             if user == None:
-                user = UserModel()
-                user.id = tweet.author.id
-                user.screen_name = tweet.author.screen_name
+                user = UserModel(id=tweet.author.id,
+                                 screen_name=tweet.author.screen_name)
                 user.put()
 
-            query = StatusModel.all().filter('id', tweet.id)
-            status = query.get()
+            status = StatusModel.all().filter('id', tweet.id).get()
             if status == None:
-                status = StatusModel()
-                status.id = tweet.id
-                status.text = tweet.text
-                status.author = user.key()
-                status.updated = False
+                status = StatusModel(id=tweet.id, text=tweet.text,
+                                     author=user.key(), updated=False)
                 status.put()
