@@ -1,19 +1,19 @@
 cron:
-- description: save timeline every 7 minutes
+- description: save timeline every 5 minutes
   url: /task/save_timeline
-  schedule: every 7 minutes
+  schedule: every 3 minutes
   timezone: Asia/Tokyo
-- description: save search results every 9 minutes
+- description: save search results every 5 minutes
   url: /task/save_search
-  schedule: every 9 minutes
+  schedule: every 5 minutes
   timezone: Asia/Tokyo
-- description: reply mentions every 11 minutes
+- description: reply mentions every 5 minutes
   url: /task/reply_mentions
-  schedule: every 11 minutes
+  schedule: every 5 minutes
   timezone: Asia/Tokyo
-- description: forward direct messages every 13 minutes
+- description: forward direct messages every 10 minutes
   url: /task/forward_direct_messages
-  schedule: every 13 minutes
+  schedule: every 10 minutes
   timezone: Asia/Tokyo
 - description: refollowe every days
   url: /task/auto_refollow
