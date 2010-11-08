@@ -2,33 +2,11 @@
 # -*- coding:utf-8 -*-
 import os
 import re
-from google.appengine.ext import db
+from models import *
 from zipimport import zipimporter
 
 tweepy_path = os.path.join('lib', 'tweepy-1.7.1-py2.5.egg')
 tweepy = zipimporter(tweepy_path).load_module('tweepy')
-
-
-class UserModel(db.Model):
-    id = db.IntegerProperty()
-    screen_name = db.StringProperty()
-
-
-class StatusModel(db.Model):
-    id = db.IntegerProperty()
-    text = db.TextProperty()
-    author = db.ReferenceProperty(UserModel)
-    updated = db.BooleanProperty()
-
-
-class FollowersModel(db.Model):
-    id = db.IntegerProperty()
-    screen_name = db.StringProperty()
-
-
-class DirectMessagesModel(db.Model):
-    id = db.IntegerProperty()
-    text = db.TextProperty()
 
 
 class OmiaiBot(object):

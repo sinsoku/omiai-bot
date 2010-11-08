@@ -2,7 +2,8 @@
 # -*- coding:utf-8 -*-
 
 from nose.tools import *
-from omiaibot import OmiaiBot, UserModel, StatusModel
+from models import UserModel, StatusModel
+from omiaibot import OmiaiBot
 from StringIO import StringIO
 
 
