@@ -76,10 +76,9 @@ class OmiaiBot(object):
 
     def forward_direct_messages(self):
         messages = self.api.direct_messages()
-        query = DirectMessagesModel.all()
 
         for message in messages:
-            if query.filter('id', message.id).count() == 0:
+            if DirectMessagesModel.all().filter('id', message.id).count() == 0:
                 status_data = (self.author, message.sender_screen_name,
                                message.text)
                 status = u'd %s @%s: %s' % status_data
@@ -98,10 +97,9 @@ class OmiaiBot(object):
 
     def update_followers(self):
         followers = self.api.followers()
-        query = FollowersModel.all()
 
         for user in followers:
-            if query.filter('id', user.id).count() == 0:
+            if FollowersModel.all().filter('id', user.id).count() == 0:
                 db = FollowersModel(id=user.id, screen_name=user.screen_name)
                 db.put()
 
