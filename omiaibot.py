@@ -73,14 +73,9 @@ class OmiaiBot(object):
                                'user': message.sender_screen_name,
                                'text': message.text}
                 status = 'd %(forward_user)s @%(user)s: %(text)s' % status_data
-                if len(status) < 140:
-                    self.api.update_status(status)
-                else:
-                    self.api.update_status(status[0:137] + '...')
+                self._update_status(status)
 
-                db = DirectMessagesModel()
-                db.id = message.id
-                db.text = message.text
+                db = DirectMessagesModel(id=message.id, text=message.text)
                 db.put()
 
     def auto_refollow(self):
@@ -96,9 +91,7 @@ class OmiaiBot(object):
 
         for user in followers:
             if FollowersModel.all().filter('id', user.id).count() == 0:
-                db = FollowersModel()
-                db.id = user.id
-                db.screen_name = user.screen_name
+                db = FollowersModel(id=user.id, screen_name=user.screen_name)
                 db.put()
 
     def update(self):
@@ -106,14 +99,17 @@ class OmiaiBot(object):
 
         for tweet in tweets:
             status = 'RT @%s: %s' % (tweet.author.screen_name, tweet.text)
-            status = re.sub('@', '_', status)
-            if len(status) < 140:
-                self.api.update_status(status)
-            else:
-                self.api.update_status(status[0:137] + '...')
+            self._update_status(status)
 
             tweet.updated = True
             tweet.put()
+
+    def _update_status(self, status):
+        status = re.sub('@', '_', status)
+        if len(status) < 140:
+            self.api.update_status(status)
+        else:
+            self.api.update_status(status[0:137] + '...')
 
     def find_all(self, tweets, words):
         results = list()
