@@ -121,12 +121,13 @@ class OmiaiBot(object):
             self.api.update_status(status[0:137] + '...')
 
     def _replace_screen_name(self, status):
-        query = FollowersModel.all()
         status_list = status.split('@')
+        regex = re.compile(r'(\w+)')
 
         for n in range(1, len(status_list)):
             tweet = status_list[n]
-            screen_name = tweet[:tweet.find(' ')]
+            screen_name = regex.search(tweet).group(0)
+            query = FollowersModel.all()
             if query.filter('screen_name', screen_name).count() > 0:
                 status_list[n] = '@' + tweet
             else:

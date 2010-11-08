@@ -111,10 +111,10 @@ class TestOmiaiBot(object):
 
     def test_replace_screen_name(self):
         bot = OmiaiBot(init_api=False)
-        status = u'@sinsoku_listy @no_db_user'
+        status = u'RT @sinsoku_listy: @no_db_user'
         user = FollowersModel(id=0, screen_name='sinsoku_listy')
         user.put()
 
         status = bot._replace_screen_name(status)
 
-        eq_(status, u'@sinsoku_listy _no_db_user')
+        eq_(status, u'RT @sinsoku_listy: _no_db_user')
