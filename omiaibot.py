@@ -11,6 +11,7 @@ tweepy = zipimporter(tweepy_path).load_module('tweepy')
 
 class OmiaiBot(object):
 
+    author = 'sinsoku_listy'
     words = [u'彼女ほしい', u'彼女欲しい',
              u'彼氏ほしい', u'彼氏欲しい']
     exclude = [u'http://']
@@ -75,13 +76,13 @@ class OmiaiBot(object):
 
     def forward_direct_messages(self):
         messages = self.api.direct_messages()
+        db_messages = DirectMessagesModel.all().fetch(1000)
 
         for message in messages:
-            if DirectMessagesModel.all().filter('id', message.id).count() == 0:
-                status_data = {'forward_user': 'sinsoku_listy',
-                               'user': message.sender_screen_name,
-                               'text': message.text}
-                status = 'd %(forward_user)s @%(user)s: %(text)s' % status_data
+            if not message.id in db_messages:
+                status_data = (self.author, message.sender_screen_name,
+                               message.text)
+                status = 'd %s @%s: %s' % status_data
                 self._update_status(status)
 
                 db = DirectMessagesModel(id=message.id, text=message.text)
@@ -97,9 +98,10 @@ class OmiaiBot(object):
 
     def update_followers(self):
         followers = self.api.followers()
+        db_followers = FollowersModel.all().fetch(1000)
 
         for user in followers:
-            if FollowersModel.all().filter('id', user.id).count() == 0:
+            if not user.id in db_followers:
                 db = FollowersModel(id=user.id, screen_name=user.screen_name)
                 db.put()
 
