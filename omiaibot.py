@@ -82,7 +82,7 @@ class OmiaiBot(object):
             if not message.id in db_messages:
                 status_data = (self.author, message.sender_screen_name,
                                message.text)
-                status = 'd %s @%s: %s' % status_data
+                status = u'd %s @%s: %s' % status_data
                 self._update_status(status)
 
                 db = DirectMessagesModel(id=message.id, text=message.text)
@@ -109,18 +109,32 @@ class OmiaiBot(object):
         tweets = StatusModel.all().filter('updated', False).fetch(3)
 
         for tweet in tweets:
-            status = 'RT @%s: %s' % (tweet.author.screen_name, tweet.text)
+            status = u'RT @%s: %s' % (tweet.author.screen_name, tweet.text)
             self._update_status(status)
 
             tweet.updated = True
             tweet.put()
 
     def _update_status(self, status):
-        status = re.sub('@', '_', status)
+        status = self._replace_screen_name(status)
         if len(status) < 140:
             self.api.update_status(status)
         else:
             self.api.update_status(status[0:137] + '...')
+
+    def _replace_screen_name(self, status):
+        query = FollowersModel.all()
+        status_list = status.split('@')
+
+        for n in range(1, len(status_list)):
+            tweet = status_list[n]
+            screen_name = tweet[:tweet.find(' ')]
+            if query.filter('screen_name', screen_name).count() > 0:
+                status_list[n] = '@' + tweet
+            else:
+                status_list[n] = '_' + tweet
+
+        return ''.join(status_list)
 
     def find_all(self, tweets, words):
         results = list()

@@ -3,7 +3,7 @@
 
 from nose.tools import *
 from mock import MockStatus
-from models import UserModel, StatusModel
+from models import UserModel, StatusModel, FollowersModel
 from omiaibot import OmiaiBot
 from StringIO import StringIO
 
@@ -108,3 +108,13 @@ class TestOmiaiBot(object):
         users = query.filter('id', 41L).fetch(2)
 
         eq_(len(users), 1)
+
+    def test_replace_screen_name(self):
+        bot = OmiaiBot(init_api=False)
+        status = u'@sinsoku_listy @no_db_user'
+        user = FollowersModel(id=0, screen_name='sinsoku_listy')
+        user.put()
+
+        status = bot._replace_screen_name(status)
+
+        eq_(status, u'@sinsoku_listy _no_db_user')
