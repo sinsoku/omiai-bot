@@ -36,33 +36,42 @@ class OmiaiBot(object):
 
     def save_timeline(self):
         friends_tl = self.api.friends_timeline()
-        tweets = [tweet for tweet in friends_tl
-                  if tweet.author.screen_name != 'omiai_bot']
-        tweets = self.find_all(tweets, self.words)
-        tweets = self.remove_all(tweets, self.exclude)
-        self._put_tweets(tweets)
-
-    def save_search(self):
-        search_result = self.api.search(' OR '.join(self.words))
-        for tweet in search_result:
-            # ユーザオブジェクトの代用に無理やりlambdaを使用
-            author = lambda x: x
-            author.id = tweet.from_user_id
-            author.screen_name = tweet.from_user
-            tweet.author = author
-
-        tweets = [tweet for tweet in search_result
-                  if tweet.author.screen_name != 'omiai_bot']
-        tweets = self.remove_all(tweets, self.exclude)
+        tweets = self._filter_tweets(friends_tl)
         self._put_tweets(tweets)
 
     def reply_mentions(self):
         mentions = self.api.mentions()
-        tweets = [tweet for tweet in mentions
-                  if tweet.author.screen_name != 'omiai_bot']
-        tweets = self.find_all(tweets, self.words)
+        tweets = self._filter_tweets(mentions)
+        self._put_tweets(tweets)
+
+    def _filter_tweets(self, tweets):
+        results = list()
+        for tweet in tweets:
+            if tweet.author.screen_name != 'omiai_bot':
+                results.append(tweet)
+
+        results = self.find_all(results, self.words)
+        results = self.remove_all(results, self.exclude)
+
+        return results
+
+    def save_search(self):
+        search_results = self.api.search(' OR '.join(self.words))
+        self._add_userobject_info(search_result)
+        tweets = [tweet for tweet in search_results
+                        if tweet.author.screen_name != 'omiai_bot']
         tweets = self.remove_all(tweets, self.exclude)
         self._put_tweets(tweets)
+
+    def _add_userobject_info(self, search_results):
+        class UserObject(object):
+
+            def __init__(self, id, screen_name):
+                self.id = id
+                self.screen_name = screen_name
+
+        for tweet in search_results:
+            tweet.author = UserObject(tweet.from_user_id, tweet.from_user)
 
     def forward_direct_messages(self):
         messages = self.api.direct_messages()
