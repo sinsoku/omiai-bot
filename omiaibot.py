@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
+import logging
 import os
 import re
 from models import *
@@ -57,12 +58,15 @@ class OmiaiBot(object):
         return results
 
     def save_search(self):
-        search_results = self.api.search(' OR '.join(self.words))
-        self._add_userobject_info(search_result)
-        tweets = [tweet for tweet in search_results
-                        if tweet.author.screen_name != 'omiai_bot']
-        tweets = self.remove_all(tweets, self.exclude)
-        self._put_tweets(tweets)
+        try:
+            search_results = self.api.search(' OR '.join(self.words))
+            self._add_userobject_info(search_result)
+            tweets = [tweet for tweet in search_results
+                            if tweet.author.screen_name != 'omiai_bot']
+            tweets = self.remove_all(tweets, self.exclude)
+            self._put_tweets(tweets)
+        except tweepy.TweepError, reason:
+            logging.info(reason)
 
     def _add_userobject_info(self, search_results):
         class UserObject(object):
