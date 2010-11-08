@@ -1,11 +1,11 @@
 cron:
-- description: save timeline every 5 minutes
+- description: save timeline every 3 minutes
   url: /task/save_timeline
   schedule: every 3 minutes
   timezone: Asia/Tokyo
-- description: save search results every 5 minutes
+- description: save search results every 15 minutes
   url: /task/save_search
-  schedule: every 5 minutes
+  schedule: every 15 minutes
   timezone: Asia/Tokyo
 - description: reply mentions every 5 minutes
   url: /task/reply_mentions
