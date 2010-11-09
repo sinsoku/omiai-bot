@@ -65,8 +65,10 @@ class OmiaiBot(object):
                             if tweet.author.screen_name != 'omiai_bot']
             tweets = self.remove_all(tweets, self.exclude)
             self._put_tweets(tweets)
+
+            logging.info('save_search() is Success')
         except tweepy.TweepError, reason:
-            logging.info(reason)
+            logging.warning(reason)
 
     def _add_userobject_info(self, search_results):
         class UserObject(object):
