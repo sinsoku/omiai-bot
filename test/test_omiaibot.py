@@ -12,11 +12,10 @@ class TestOmiaiBot(object):
 
     def test_parse_config(self):
         bot = OmiaiBot(init_api=False)
-        config_data = '\n'.join(['consumer_key = ConsumerKey',
-                                 'consumer_secret = ConsumerSecret',
-                                 'access_key = AccessKey',
-                                 'access_secret = AccessSecret'])
-        config_file = StringIO(config_data)
+        config_file = StringIO('consumer_key: ConsumerKey\n' +
+                               'consumer_secret: ConsumerSecret\n' +
+                               'access_key: AccessKey\n' +
+                               'access_secret: AccessSecret\n')
 
         auth_info = bot._parse_config(config_file)
 

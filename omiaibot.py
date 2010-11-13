@@ -3,6 +3,7 @@
 import logging
 import os
 import re
+import yaml
 from models import *
 from zipimport import zipimporter
 
@@ -29,12 +30,7 @@ class OmiaiBot(object):
             self.api = tweepy.API(auth)
 
     def _parse_config(self, config_file):
-        auth_info = dict()
-        for line in config_file.readlines():
-            key, value = line.split('=')
-            auth_info[key.strip()] = value.strip()
-
-        return auth_info
+        return yaml.load(config_file.read())
 
     def save_timeline(self):
         friends_tl = self.api.friends_timeline()
