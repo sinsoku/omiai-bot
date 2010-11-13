@@ -15,13 +15,18 @@
 # limitations under the License.
 #
 from google.appengine.ext import webapp
-from google.appengine.ext.webapp import util
+from google.appengine.ext.webapp import util, template
 from omiaibot import OmiaiBot
+import os
+
+_script_dir = os.path.dirname(__file__)
+template_dir = os.path.join(_script_dir, 'template')
 
 
 class MainHandler(webapp.RequestHandler):
     def get(self):
-        self.response.out.write('MainHandler')
+        path = os.path.join(template_dir, 'index.html')
+        self.response.out.write(template.render(path, None))
 
 
 class TaskHandler(webapp.RequestHandler):
