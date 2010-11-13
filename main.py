@@ -43,11 +43,13 @@ class TaskHandler(webapp.RequestHandler):
             bot.update_followers()
         elif kind == 'update':
             bot.update()
+        else:
+            self.response.out.write('no task')
 
 
 def application():
     handlers = [('/', MainHandler),
-                ('/task/(.*)', TaskHandler)]
+                ('/task/?(.*)', TaskHandler)]
 
     return webapp.WSGIApplication(handlers, debug=True)
 

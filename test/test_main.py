@@ -6,10 +6,21 @@ from nose.tools import *
 from webtest import TestApp
 
 
-class TestMain(object):
+class TestMainHandler(object):
 
-    def test_application(self):
+    def test_get(self):
         app = TestApp(application())
         response = app.get('/')
 
         eq_('200 OK', response.status)
+        ok_('MainHandler', str(response))
+
+
+class TestTaskHandler(object):
+
+    def test_get_when_task_is_none(self):
+        app = TestApp(application())
+        response = app.get('/task')
+
+        eq_('200 OK', response.status)
+        ok_('no task' in str(response))
