@@ -45,21 +45,9 @@ class TaskHandler(webapp.RequestHandler):
             bot.update()
 
 
-class ReadmeHandler(webapp.RequestHandler):
-    def get(self):
-        self.response.out.write('ReadmeHandler')
-
-
-class UserHandler(webapp.RequestHandler):
-    def get(self, user):
-        self.response.out.write('UserHandler/' + user)
-
-
 def application():
     handlers = [('/', MainHandler),
-                ('/task/(.*)', TaskHandler),
-                ('/readme', ReadmeHandler),
-                ('/user/(.*)', UserHandler)]
+                ('/task/(.*)', TaskHandler)]
 
     return webapp.WSGIApplication(handlers, debug=True)
 
