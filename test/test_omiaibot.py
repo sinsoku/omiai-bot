@@ -10,22 +10,18 @@ from StringIO import StringIO
 
 class TestOmiaiBot(object):
 
-    def test_parse_config(self):
-        bot = OmiaiBot(init_api=False)
-        config_file = StringIO('consumer_key: ConsumerKey\n' +
-                               'consumer_secret: ConsumerSecret\n' +
-                               'access_key: AccessKey\n' +
-                               'access_secret: AccessSecret\n')
+    def test_init_when_no_auth_api(self):
+        bot = OmiaiBot(oauth_yamlname=None)
 
-        auth_info = bot._parse_config(config_file)
+        eq_(bot.api.auth, None)
 
-        eq_(auth_info['consumer_key'], 'ConsumerKey')
-        eq_(auth_info['consumer_secret'], 'ConsumerSecret')
-        eq_(auth_info['access_key'], 'AccessKey')
-        eq_(auth_info['access_secret'], 'AccessSecret')
+    def test_init_when_auth_api(self):
+        bot = OmiaiBot(oauth_yamlname='oauth.txt')
+
+        ok_(bot.api.auth)
 
     def test_find_all(self):
-        bot = OmiaiBot(init_api=False)
+        bot = OmiaiBot()
         tweets = [MockStatus(31, 30, u'find_all_user', u'hoge text'),
                   MockStatus(32, 30, u'find_all_user', u'foo text'),
                   MockStatus(33, 30, u'find_all_user', u'test bar text')]
@@ -38,7 +34,7 @@ class TestOmiaiBot(object):
         eq_(tweets[1].text, u'test bar text')
 
     def test_remove_all(self):
-        bot = OmiaiBot(init_api=False)
+        bot = OmiaiBot()
         tweets = [MockStatus(31, 30, u'find_all_user', u'hoge text'),
                   MockStatus(32, 30, u'find_all_user', u'foo text'),
                   MockStatus(33, 30, u'find_all_user', u'test bar text')]
@@ -53,7 +49,7 @@ class TestOmiaiBot(object):
     def test_put_tweets_when_data_is_simple(self):
         data = [MockStatus(1, 1, u'user_name', u'text')]
 
-        bot = OmiaiBot(init_api=False)
+        bot = OmiaiBot()
         bot._put_tweets(data)
 
         query = StatusModel.all()
@@ -68,7 +64,7 @@ class TestOmiaiBot(object):
         data = [MockStatus(11, 11, u'user1', u'text1'),
                 MockStatus(12, 12, u'user2', u'text2')]
 
-        bot = OmiaiBot(init_api=False)
+        bot = OmiaiBot()
         bot._put_tweets(data)
 
         query = StatusModel.all()
@@ -88,7 +84,7 @@ class TestOmiaiBot(object):
         data = [MockStatus(21, 20, u'same_user', u'text1'),
                 MockStatus(22, 20, u'same_user', u'text2')]
 
-        bot = OmiaiBot(init_api=False)
+        bot = OmiaiBot()
         bot._put_tweets(data)
 
         query = UserModel.all()
@@ -100,7 +96,7 @@ class TestOmiaiBot(object):
         data = [MockStatus(41, 40, u'same_tweet', u'text1'),
                 MockStatus(41, 40, u'same_tweet', u'text1')]
 
-        bot = OmiaiBot(init_api=False)
+        bot = OmiaiBot()
         bot._put_tweets(data)
 
         query = StatusModel.all()
@@ -109,7 +105,7 @@ class TestOmiaiBot(object):
         eq_(len(users), 1)
 
     def test_replace_screen_name(self):
-        bot = OmiaiBot(init_api=False)
+        bot = OmiaiBot()
         status = u'RT @sinsoku_listy: @no_db_user'
         user = FollowersModel(id=0, screen_name='sinsoku_listy')
         user.put()

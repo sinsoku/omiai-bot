@@ -27,7 +27,7 @@ class MainHandler(webapp.RequestHandler):
 class TaskHandler(webapp.RequestHandler):
 
     def get(self, kind):
-        bot = OmiaiBot()
+        bot = OmiaiBot(oauth_yamlname='oauth.txt')
 
         if kind == 'save_timeline':
             bot.save_timeline()

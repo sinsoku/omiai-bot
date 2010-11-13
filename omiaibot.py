@@ -18,19 +18,18 @@ class OmiaiBot(object):
              u'彼氏ほしい', u'彼氏欲しい']
     exclude = [u'http://']
 
-    def __init__(self, init_api=True):
-        if init_api:
-            config_file = open('oauth.txt', 'r')
-            auth_info = self._parse_config(config_file)
+    def __init__(self, oauth_yamlname=None):
+        if oauth_yamlname:
+            yaml_data = open(oauth_yamlname, 'r').read()
+            auth_info = yaml.load(yaml_data)
 
             auth = tweepy.OAuthHandler(auth_info['consumer_key'],
                                        auth_info['consumer_secret'])
             auth.set_access_token(auth_info['access_key'],
                                   auth_info['access_secret'])
             self.api = tweepy.API(auth)
-
-    def _parse_config(self, config_file):
-        return yaml.load(config_file.read())
+        else:
+            self.api = tweepy.api
 
     def save_timeline(self):
         friends_tl = self.api.friends_timeline()
