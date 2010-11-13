@@ -29,6 +29,12 @@ class MainHandler(webapp.RequestHandler):
         self.response.out.write(template.render(path, None))
 
 
+class SearchHandler(webapp.RequestHandler):
+    def get(self):
+        path = os.path.join(template_dir, 'search.html')
+        self.response.out.write(template.render(path, None))
+
+
 class TaskHandler(webapp.RequestHandler):
 
     def get(self, kind):
@@ -54,6 +60,7 @@ class TaskHandler(webapp.RequestHandler):
 
 def application():
     handlers = [('/', MainHandler),
+                ('/search', SearchHandler),
                 ('/task/?(.*)', TaskHandler)]
 
     return webapp.WSGIApplication(handlers, debug=True)

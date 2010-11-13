@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <title>お見合いbot - 検索</title>
+    <link rel="stylesheet" href="search.css" type="text/css" />
+  </head>
+  <body>
+    <div id="appheader">
+      <a href="/">トップページ</a>
+      <a href="/search">検索</a>
+    </div>
+      <div>
+        <form action="/search" method="post">
+          <input type="text" size="50" value="" name="q" maxlength="256">
+          <input type="submit" name="search" value="検索">
+        </form>
+      <div id="appbody">
+        <img src="user.jpg" height="48" width="48" align="top">つぶやき
+        <div id="user">screen_name</div>
+      </div>
+  </body>
+</html>

@@ -16,6 +16,16 @@ class TestMainHandler(object):
         ok_('MainHandler', str(response))
 
 
+class TestSearchHandler(object):
+
+    def test_get(self):
+        app = TestApp(application())
+        response = app.get('/search')
+
+        eq_('200 OK', response.status)
+        #ok_(, str(response))
+
+
 class TestTaskHandler(object):
 
     def test_get_when_task_is_none(self):
